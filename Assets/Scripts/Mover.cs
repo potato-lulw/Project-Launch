@@ -6,6 +6,7 @@ public class Mover : MonoBehaviour
 {
 
     Rigidbody rb;
+    AudioSource audioSource;
 
     [SerializeField]float mainThrust = 100f;
     [SerializeField]float rotationThrust = 100f;
@@ -14,6 +15,9 @@ public class Mover : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.drag = 0.25f;
+
+        audioSource = GetComponent<AudioSource>();
+        audioSource.Stop();
     }
 
     // Update is called once per frame
@@ -29,7 +33,17 @@ public class Mover : MonoBehaviour
         {
             //Debug.Log("Pressing SPACE - Thrusting");
             rb.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
+			if (!audioSource.isPlaying)
+			{
+                audioSource.Play();
+			}
+			else { 
+            }
         }
+        else
+		{
+            audioSource.Stop();
+		}
 	}
 
     void ProcessRotation()
