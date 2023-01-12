@@ -10,6 +10,7 @@ public class Mover : MonoBehaviour
 
     [SerializeField]float mainThrust = 100f;
     [SerializeField]float rotationThrust = 100f;
+    [SerializeField] AudioClip mainEngine;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,13 +30,14 @@ public class Mover : MonoBehaviour
 
     void ProcessThrust()
     {
+
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.Space)) 
         {
             //Debug.Log("Pressing SPACE - Thrusting");
             rb.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
 			if (!audioSource.isPlaying)
 			{
-                audioSource.Play();
+                audioSource.PlayOneShot(mainEngine);
 			}
 			else { 
             }
