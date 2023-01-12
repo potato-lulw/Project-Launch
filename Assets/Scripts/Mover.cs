@@ -11,7 +11,12 @@ public class Mover : MonoBehaviour
     [SerializeField]float mainThrust = 100f;
     [SerializeField]float rotationThrust = 100f;
     [SerializeField] AudioClip mainEngine;
-    // Start is called before the first frame update
+
+
+    [SerializeField] ParticleSystem mainBoostpart;
+    [SerializeField] ParticleSystem leftBoostpart;
+    [SerializeField] ParticleSystem rightBoostpart;
+   
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -38,13 +43,18 @@ public class Mover : MonoBehaviour
 			if (!audioSource.isPlaying)
 			{
                 audioSource.PlayOneShot(mainEngine);
+                
 			}
-			else { 
+			if (!mainBoostpart.isPlaying)
+			{
+                mainBoostpart.Play();
             }
+            
         }
         else
 		{
             audioSource.Stop();
+            mainBoostpart.Stop();
 		}
 	}
 
@@ -53,10 +63,27 @@ public class Mover : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
 		{
 			ApplyRotation(rotationThrust);
-		}
+            if (!leftBoostpart.isPlaying)
+            {
+                leftBoostpart.Play();
+            }
+			
+        }
 		else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
             ApplyRotation(-rotationThrust);
+
+            if (!rightBoostpart.isPlaying)
+            {
+                rightBoostpart.Play();
+            }
+            
+        }
+
+        else
+        {
+            leftBoostpart.Stop();
+            rightBoostpart.Stop();
         }
     }
     
