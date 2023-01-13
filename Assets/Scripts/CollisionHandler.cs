@@ -17,18 +17,36 @@ public class CollisionHandler : MonoBehaviour
 	
 
 	bool isTransitioning = false;
+	bool collisionDisabled = false;
 
 	private void Start()
 	{
 		audioSource = GetComponent<AudioSource>();
-		
 	}
 
+	private void Update()
+	{
+		Cheats();
+	}
+
+
+	void Cheats()
+	{
+		if (Input.GetKeyDown(KeyCode.L))
+		{
+			LoadNextLevel();
+		}
+
+		else if (Input.GetKeyDown(KeyCode.C))
+		{
+			collisionDisabled = !collisionDisabled;
+		}
+	}
 
 
 	private void OnCollisionEnter(Collision collision)
 	{
-		if (isTransitioning) return;
+		if (isTransitioning || collisionDisabled) return;
 
 		switch(collision.gameObject.tag){
 			case "Friendly":
@@ -37,7 +55,7 @@ public class CollisionHandler : MonoBehaviour
 
 			case "Finish":
 				Debug.Log("This is the check-point");
-				successSequence();
+				SuccessSequence();
 				break;
 
 			/*case "Obstacle":
@@ -50,7 +68,7 @@ public class CollisionHandler : MonoBehaviour
 
 			default:
 
-				crashSequence();
+				CrashSequence();
 				//Debug.Log("Game Over");
 				break;
 
@@ -58,34 +76,39 @@ public class CollisionHandler : MonoBehaviour
 	}
 
 
-	void crashSequence()
+	void CrashSequence()
 	{
 		audioSource.volume = 0.2f;
 		audioSource.PlayOneShot(crashSound);
+		
 		crashParticles.Play();
 		isTransitioning = true;
+		//gameObject.SetActive(false);
+		//GetComponent<Renderer>().enabled = false;
 		GetComponent<Mover>().enabled = false;
-		Invoke("reloadLevel", delay);
+		//Invoke("bruh", 0.5f);
+		Invoke("ReloadLevel", delay);
 		//audioSouce.Stop();
 	}
 
-	void successSequence()
+	void SuccessSequence()
 	{
 		audioSource.volume = 0.5f;
 		audioSource.PlayOneShot(successSound);
 		successParticles.Play();
 		isTransitioning = true;
 		GetComponent<Mover>().enabled = false;
-		Invoke("loadNextLevel", delay);
+		Invoke("LoadNextLevel", delay);
 		//audioSouce.Stop();
 	}
-	void reloadLevel()
+	void ReloadLevel()
 	{
+		
 		int currentSceneindex = SceneManager.GetActiveScene().buildIndex;
 		SceneManager.LoadScene(currentSceneindex);
 	}
 
-	void loadNextLevel()
+	void LoadNextLevel()
 	{
 		int totalScenes = SceneManager.sceneCountInBuildSettings;
 		int currentSceneindex = SceneManager.GetActiveScene().buildIndex;

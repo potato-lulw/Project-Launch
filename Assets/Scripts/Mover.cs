@@ -5,94 +5,117 @@ using UnityEngine;
 public class Mover : MonoBehaviour
 {
 
-    Rigidbody rb;
-    AudioSource audioSource;
+	Rigidbody rb;
+	AudioSource audioSource;
 
-    [SerializeField]float mainThrust = 100f;
-    [SerializeField]float rotationThrust = 100f;
-    [SerializeField] AudioClip mainEngine;
+	[SerializeField] float mainThrust = 100f;
+	[SerializeField] float rotationThrust = 100f;
+
+	[SerializeField] AudioClip mainEngine;
 
 
-    [SerializeField] ParticleSystem mainBoostpart;
-    [SerializeField] ParticleSystem leftBoostpart;
-    [SerializeField] ParticleSystem rightBoostpart;
-   
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        rb.drag = 0.25f;
+	[SerializeField] ParticleSystem mainBoostpart;
+	[SerializeField] ParticleSystem leftBoostpart;
+	[SerializeField] ParticleSystem rightBoostpart;
 
-        audioSource = GetComponent<AudioSource>();
-        audioSource.Stop();
-    }
+	void Start()
+	{
+		rb = GetComponent<Rigidbody>();
+		rb.drag = 0.25f;
 
-    // Update is called once per frame
-    void Update()
-    {
-        ProcessThrust();
-        ProcessRotation();
-    }
+		audioSource = GetComponent<AudioSource>();
+		audioSource.Stop();
+	}
 
-    void ProcessThrust()
-    {
 
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.Space)) 
-        {
-            //Debug.Log("Pressing SPACE - Thrusting");
-            rb.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
-			if (!audioSource.isPlaying)
-			{
-                audioSource.PlayOneShot(mainEngine);
-                
-			}
-			if (!mainBoostpart.isPlaying)
-			{
-                mainBoostpart.Play();
-            }
-            
-        }
-        else
+
+	void Update()
+	{
+		ProcessThrust();
+		ProcessRotation();
+	}
+
+	void ProcessThrust()
+	{
+
+		if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.Space))
 		{
-            audioSource.Stop();
-            mainBoostpart.Stop();
+
+			StartThrusting();
+		}
+		else
+		{
+			StopThrust();
 		}
 	}
 
-    void ProcessRotation()
+	void ProcessRotation()
 	{
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+		if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
 		{
-			ApplyRotation(rotationThrust);
-            if (!leftBoostpart.isPlaying)
-            {
-                leftBoostpart.Play();
-            }
-			
-        }
+			RotateLeft();
+		}
 		else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
-        {
-            ApplyRotation(-rotationThrust);
+		{
+			RotateRight();
+		}
+		else
+		{
+			StopRotating();
+		}
+	}
 
-            if (!rightBoostpart.isPlaying)
-            {
-                rightBoostpart.Play();
-            }
-            
-        }
+	private void StartThrusting()
+	{
+		rb.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
+		if (!audioSource.isPlaying)
+		{
+			audioSource.PlayOneShot(mainEngine);
 
-        else
-        {
-            leftBoostpart.Stop();
-            rightBoostpart.Stop();
-        }
-    }
-    
+		}
+		if (!mainBoostpart.isPlaying)
+		{
+			mainBoostpart.Play();
+		}
+	}
+
+	private void StopThrust()
+	{
+		audioSource.Stop();
+		mainBoostpart.Stop();
+	}
+
+	private void RotateRight()
+	{
+		ApplyRotation(-rotationThrust);
+
+		if (!rightBoostpart.isPlaying)
+		{
+			rightBoostpart.Play();
+		}
+	}
+
+	private void RotateLeft()
+	{
+		ApplyRotation(rotationThrust);
+		if (!leftBoostpart.isPlaying)
+		{
+			leftBoostpart.Play();
+		}
+	}
+
+	private void StopRotating()
+	{
+		leftBoostpart.Stop();
+		rightBoostpart.Stop();
+	}
+
 	private void ApplyRotation(float rotationThisFrame)
 	{
-        
-        rb.freezeRotation = true; // freezing so we cant rotate manually
+
+		rb.freezeRotation = true; // freezing so we cant rotate manually
 		transform.Rotate(Vector3.forward * Time.deltaTime * rotationThisFrame);
-        rb.freezeRotation = false; // unfreezing so we can rotate manyally
+		rb.freezeRotation = false; // unfreezing so we can rotate manyally
 
 	}
 }
